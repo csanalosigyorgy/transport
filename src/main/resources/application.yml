@@ -1,0 +1,29 @@
+server:
+  servlet:
+    context-path: /transport/api
+
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/transport
+    username: postgres
+    password: admin
+  jpa:
+    show-sql: true
+    hibernate:
+      ddl-auto: update
+    open-in-view: false
+  mvc:
+    format:
+      date: yyyy-MM-dd
+      date-time: yyyy-MM-dd HH:mm
+
+transport:
+  a-pageable:
+    page: 0
+    size: 2000
+    sort-by: id
+  delay:
+   limits:
+    30: 1
+    60: 2
+    120: 5
