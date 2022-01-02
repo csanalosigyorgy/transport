@@ -1,6 +1,6 @@
 server:
   servlet:
-    context-path: /transport/api
+    context-path: /transport
 
 spring:
   datasource:
@@ -24,6 +24,7 @@ transport:
     sort-by: id
   delay:
    limits:
-    30: 1
-    60: 2
-    120: 5
+    1: 0.5
+    30: 1.0
+    60: 2.0
+    120: 5.0

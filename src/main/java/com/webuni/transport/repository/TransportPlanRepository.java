@@ -3,6 +3,7 @@ package com.webuni.transport.repository;
 import java.util.List;
 import java.util.Optional;
 
+import org.jetbrains.annotations.NotNull;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -17,10 +18,10 @@ public interface TransportPlanRepository extends JpaRepository<TransportPlan, Lo
 			"sections.fromMilestone.address",
 			"sections.toMilestone",
 			"sections.toMilestone.address"})
-	@Query("SELECT t FROM TransportPlan t")
+	@Query("SELECT t FROM TransportPlan t ORDER BY t.id")
+	@NotNull
 	List<TransportPlan> findAll();
 
-	@Override
 	@EntityGraph(attributePaths = {
 			"sections",
 			"sections.fromMilestone",
@@ -28,5 +29,15 @@ public interface TransportPlanRepository extends JpaRepository<TransportPlan, Lo
 			"sections.toMilestone",
 			"sections.toMilestone.address"})
 	@Query("SELECT t FROM TransportPlan t WHERE t.id = ?1")
-	Optional<TransportPlan> findById(Long id);
+	Optional<TransportPlan> findByIdDetailed(Long id);
+
+	@Override
+	@EntityGraph(attributePaths = {
+			"sections",
+			"sections.fromMilestone",
+			"sections.toMilestone"})
+	@Query("SELECT t FROM TransportPlan t WHERE t.id = ?1")
+	@NotNull
+	Optional<TransportPlan> findById(@NotNull Long id);
+
 }

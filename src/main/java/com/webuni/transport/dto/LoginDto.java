@@ -1,7 +1,5 @@
 package com.webuni.transport.dto;
 
-import java.util.List;
-
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -9,8 +7,8 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class AddressSearchResultDto {
+public class LoginDto {
 
-	List<AddressDto> addresses;
-	long totalCount;
+	private String username;
+	private String password;
 }

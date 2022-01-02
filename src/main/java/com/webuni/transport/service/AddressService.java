@@ -3,7 +3,6 @@ package com.webuni.transport.service;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Objects;
-import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -14,15 +13,13 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import com.webuni.transport.dto.AddressDto;
-import com.webuni.transport.dto.AddressSearchResultDto;
 import com.webuni.transport.mapper.AddressMapper;
 import com.webuni.transport.model.Address;
 import com.webuni.transport.repository.AddressRepository;
-import com.webuni.transport.service.base.BaseAddressService;
 import com.webuni.transport.specification.AddressSpecification;
 
 @Service
-public class AddressService implements BaseAddressService {
+public class AddressService {
 
 	@Autowired
 	private AddressMapper addressMapper;
@@ -30,52 +27,45 @@ public class AddressService implements BaseAddressService {
 	@Autowired
 	private AddressRepository addressRepository;
 
-	@Override
-	public AddressDto saveAddress(AddressDto addressDto){
+	public Address saveAddress(AddressDto addressDto){
 		Address address = addressMapper.toAddress(addressDto);
 		checkIfEntityNull(address);
 		checkIfEntityIdNonNull(address.getId());
-		return addressMapper.toAddressDto(addressRepository.save(address));
+		return addressRepository.save(address);
 	}
 
-	@Override
-	public List<AddressDto> findAll(){
-		return addressMapper.toAddressDtos(addressRepository.findAll());
+	public List<Address> findAll(){
+		return addressRepository.findAll();
 	}
 
-	@Override
-	public AddressDto findById(Long id){
-		return addressMapper.toAddressDto(addressRepository.findById(id)
-				.orElseThrow(() -> new NoSuchElementException("A keresett rekord nem létezik az adatbázisban (id: " + id + ")")));
+	public Address findById(Long id){
+		return addressRepository.findById(id)
+				.orElseThrow(() -> new NoSuchElementException("This address does not exist."));
 	}
 
-	@Override
 	public void deleteAddressById(Long id){
 		if(addressRepository.existsById(id))
 			addressRepository.deleteById(id);
 	}
 
-	@Override
 	@Transactional
-	public AddressDto updateAddress(Long id, AddressDto addressDto){
+	public Address updateAddress(Long id, AddressDto addressDto){
 		Address address = addressMapper.toAddress(addressDto);
 
 		checkIfEntityNull(address);
-		checkIfEntityIdNonNull(address.getId());
 
 		if(!address.getId().equals(id))
-			throw new IllegalArgumentException("A beküldött id-k nem egyeznek.");
+			throw new IllegalArgumentException("Posted ids are not equal.");
 
 		if(!addressRepository.existsById(id))
-			throw new NoSuchElementException("A keresett rekord nem létezik az adatbázisban (id: " + id + ")");
+			throw new NoSuchElementException("This address does not exist.");
 
 		address.setId(id);
 		addressRepository.save(address);
-		return addressMapper.toAddressDto(address);
+		return address;
 	}
 
-	@Override
-	public AddressSearchResultDto searchAddress(AddressDto exampleDto, Pageable pageable){
+	public Page<Address> searchAddress(AddressDto exampleDto, Pageable pageable){
 		Address example = addressMapper.toAddress(exampleDto);
 		checkIfEntityNull(example);
 
@@ -98,17 +88,16 @@ public class AddressService implements BaseAddressService {
 		if(Objects.nonNull(postcode))
 			spec = spec.and(AddressSpecification.hasPostcode(postcode));
 
-		Page<Address> addressesPage = addressRepository.findAll(spec, pageable);
-		return new AddressSearchResultDto(addressMapper.toAddressDtos(addressesPage.getContent()), addressesPage.getTotalElements());
+		return addressRepository.findAll(spec, pageable);
 	}
 
 	protected void checkIfEntityNull(Object entity){
 		if(Objects.isNull(entity))
-			throw new IllegalArgumentException("Nem küldött be objektumot.");
+			throw new IllegalArgumentException("Address was not posted.");
 	}
 
 	protected void checkIfEntityIdNonNull(Long id){
 		if(Objects.nonNull(id))
-			throw new IllegalArgumentException("Az objektum azonosítója már ki van töltve.");
+			throw new IllegalArgumentException("Id has to be blank.");
 	}
 }

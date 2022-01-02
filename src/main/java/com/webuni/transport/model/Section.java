@@ -3,11 +3,13 @@ package com.webuni.transport.model;
 import static javax.persistence.GenerationType.IDENTITY;
 
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -16,6 +18,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor
+@AllArgsConstructor
 public class Section {
 
 	@Id
@@ -30,6 +33,6 @@ public class Section {
 	@OneToOne
 	private Milestone toMilestone;
 
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.LAZY)
 	private TransportPlan transportPlan;
 }
